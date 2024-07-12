@@ -6,7 +6,11 @@ function buildMenuTree(data) {
   let menuObj = {};
 
   data.forEach((menuItem) => {
-    menuObj[menuItem.menuId] = { ...menuItem, children: [] };
+    menuObj[menuItem.menuId] = {
+      ...menuItem,
+      label: menuItem.item,
+      key: menuItem.menuId,
+    };
   });
 
   data.forEach((menuItem) => {
@@ -14,10 +18,13 @@ function buildMenuTree(data) {
     if (parentId !== 0) {
       const parent = menuObj[parentId];
       if (parent) {
+        if (!("children" in parent)) {
+          parent.children = [];
+        }
         parent.children.push(menuObj[menuId]);
       }
     } else {
-      menuTree.push(menuObj[menuItem.menuId]);
+      menuTree.push(menuObj[menuId]);
     }
   });
 
@@ -28,19 +35,19 @@ const data = buildMenuTree(menuData);
 console.log(data);
 
 function App() {
-  const renderMenuItems = (items) => {
-    return items.map((item) => {
-      if (item.children?.length > 0) {
-        return (
-          <Menu.SubMenu key={item.menuId} title={item.item}>
-            {renderMenuItems(item.children)}
-          </Menu.SubMenu>
-        );
-      } else {
-        return <Menu.Item key={item.menuId}>{item.item}</Menu.Item>;
-      }
-    });
-  };
+  // const renderMenuItems = (items) => {
+  //   return items.map((item) => {
+  //     if (item.children?.length > 0) {
+  //       return (
+  //         <Menu.SubMenu key={item.menuId} title={item.item}>
+  //           {renderMenuItems(item.children)}
+  //         </Menu.SubMenu>
+  //       );
+  //     } else {
+  //       return <Menu.Item key={item.menuId}>{item.item}</Menu.Item>;
+  //     }
+  //   });
+  // };
 
   return (
     <Menu
@@ -48,10 +55,8 @@ function App() {
       style={{
         width: 256,
       }}
-      // items={data}
-    >
-      {renderMenuItems(data)}
-    </Menu>
+      items={data}
+    />
   );
 }
 
